@@ -6,9 +6,9 @@ This project is a full-stack MVP for an AI-powered recipe generator. It allows u
 Project Structure
 <img width="646" height="727" alt="image" src="https://github.com/user-attachments/assets/8e780f44-ebeb-403e-98f3-320fee54778e" />
 
-🚀 Getting Started
+#🚀 Getting Started
 
-Prerequisites
+#Prerequisites
 
 Python 3.11
 
@@ -16,7 +16,7 @@ Node.js 18+
 
 Docker (optional)
 
-Backend Setup
+#Backend Setup
 
 cd backend
 
@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 uvicorn app.main:app --reload
 
-Frontend Setup
+#Frontend Setup
 
 cd frontend
 
@@ -38,7 +38,7 @@ npm start
 
 
 
-🧪 Simulated User Flow
+#🧪 Simulated User Flow
 
 User enters ingredients: chickpeas, onion, garlic
 
@@ -51,6 +51,6 @@ Backend returns recipe with nutrition info
 Frontend displays recipe card
 
 
-🙌 Acknowledgments
+#🙌 Acknowledgments
 
 Thanks to OpenAI, Edamam, Spoonacular, and the open-source community for inspiration and tools.
