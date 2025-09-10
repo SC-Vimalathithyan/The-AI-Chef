@@ -11,21 +11,29 @@ Project Structure
 Prerequisites
 
 Python 3.11
+
 Node.js 18+
+
 Docker (optional)
 
 Backend Setup
 
 cd backend
+
 python -m venv venv
+
 source venv/bin/activate
+
 pip install -r requirements.txt
+
 uvicorn app.main:app --reload
 
 Frontend Setup
 
 cd frontend
+
 npm install
+
 npm start
 
 
@@ -33,9 +41,13 @@ npm start
 🧪 Simulated User Flow
 
 User enters ingredients: chickpeas, onion, garlic
+
 Selects filters: Vegetarian, avoids nuts
+
 Clicks "Generate Recipe"
+
 Backend returns recipe with nutrition info
+
 Frontend displays recipe card
 
 
