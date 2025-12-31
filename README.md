@@ -1,4 +1,4 @@
-🍽️ AI Recipe Generator (Streamlit App)
+###🍽️ AI Recipe Generator (Streamlit App)
 
 A machine learning–powered recipe recommendation system built using Python, Scikit-learn, and Streamlit, capable of generating personalized recipes based on dietary preferences, calorie limits, and ingredients.
 
