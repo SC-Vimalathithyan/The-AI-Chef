@@ -64,37 +64,125 @@ Expandable ingredients & directions
 
 Download recipe instructions as .txt
 
-Sliders, dropdowns, and live filters# Personalized AI Recipe & Meal Planner — PoC
+Sliders, dropdowns, and live filters
+🧪 Dataset Description
 
-This repository is a working proof-of-concept for a Personalized AI Recipe & Meal Planner.
-It includes a simple Streamlit demo app, a lightweight recommendation engine, sample recipe dataset,
-evaluation scripts, and documentation for running a demo/presentation.
+The dataset contains:
 
-## What's included
-- `app/streamlit_app.py` — Streamlit UI to interact with the recommender.
-- `models/recommender.py` — Simple rule-based + similarity recommender.
-- `data/recipes.json` — Small sample recipe dataset with nutrition info.
-- `notebooks/` — (Optional) starter notebook for experimentation.
-- `requirements.txt` — Python dependencies.
-- `demo/` — Demo checklist, narration script and steps for recording.
-- `README.md` — (you are reading it)
-- `run_demo.sh` — Script to run the Streamlit app locally.
+Recipe names
 
-## Quick start (local)
-1. Create a virtual environment and activate it:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate   # macOS / Linux
-   venv\Scripts\activate    # Windows
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Run the Streamlit demo:
-   ```bash
-   streamlit run app/streamlit_app.py
-   ```
-4. Open the URL printed by Streamlit (usually http://localhost:8501).
+Ingredients
 
+Cooking instructions
+
+Calories
+
+Macronutrients (Protein, Carbs, Fat)
+
+Food type
+
+Recipe images (Images column)
+
+Dataset Challenges Addressed
+
+Inconsistent ingredient formatting
+
+Missing diet labels
+
+No explicit meat/fish categorization
+
+Unrealistic calorie values
+
+All issues are handled through robust preprocessing logic.
+
+🧠 Diet Logic Summary
+
+Diet Type	Logic Used
+Vegetarian	Plant-based only
+Non-Veg	Meat-based ingredients only
+Pescatarian	Fish/seafood, no meat
+Gluten-Free	Excludes gluten ingredients
+Keto	Low carbs + ingredient filtering
+No Preference	Balanced mix of all diets
+
+🚀 How to Run the Streamlit App
+1️⃣ Install Dependencies
+pip install -r requirements.txt
+
+2️⃣ Run the Application
+streamlit run app.py
+
+3️⃣ Open in Browser
+Streamlit will automatically open:
+http://localhost:8501
+
+🔁 Auto-Update Behavior
+
+Streamlit reruns the app automatically when inputs change
+
+Sliders, dropdowns, and text inputs trigger live updates
+
+Dataset loading is cached for performance
+
+📥 Recipe Download Feature
+
+For each recipe, users can:
+
+Download ingredients & directions
+
+Includes recipe name and image URL
+
+Generated dynamically (no file storage)
+
+🧠 Technologies Used
+
+Python
+
+Pandas, NumPy
+
+Scikit-learn
+
+Streamlit
+
+🔮 Future Enhancements
+
+PDF recipe downloads
+
+Shopping list generation
+
+Favorites system
+
+Cuisine-based filtering
+
+REST API version
+
+Deployment on Streamlit Cloud
+
+👨‍🎓 Project Type
+
+Academic / College Project
+
+Machine Learning PoC
+
+Suitable for:
+
+Machine Learning
+
+Data Science
+
+Streamlit Applications
+
+📜 License
+
+This project is intended for educational use only.
+
+⭐ Acknowledgements
+
+Open recipe datasets
+
+Python open-source ecosystem
+
+Streamlit documentation
+
+⭐ If you like this project, consider giving it a star!
 
