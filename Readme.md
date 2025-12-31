@@ -69,14 +69,13 @@ Sliders, dropdowns, and live filters
 🏗️ Project Structure
 ai-recipe-generator/
 │
-├── app.py                  # Streamlit application
+├── app.py                  
 │
 ├── ml/
-│   ├── data_loader.py      # Dataset loading & preprocessing
-│   ├── recommender.py      # Recommendation logic
+│   ├── data_loader.py      
+│   ├── recommender.py      c
 │
-├── data/
-│   └── recipes.csv         # Recipe dataset
+├── recipes.csv         
 │
 ├── requirements.txt
 └── README.md
