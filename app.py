@@ -8,6 +8,17 @@ from ml.nutrition import get_nutrition
 from ml.age_profile import get_age_calorie_limit
 from ml.ingredient_semantics import recipe_matches_ingredients
 
+# ----------------------------
+# Pagination state
+# ----------------------------
+
+# RECIPES_PER_PAGE = meals_count
+
+if "page" not in st.session_state:
+    st.session_state.page = 1
+
+if "last_query" not in st.session_state:
+    st.session_state.last_query = ""
 
 
 st.set_page_config(
@@ -84,13 +95,32 @@ with left_col:
     )
 
     meals_count = st.slider(
-        "Meals to generate",
+        "Recipes to generate",
         min_value=1,
         max_value=10,
-        value=3
+        value=3,
+        key="meals_slidebar"
     )
+    RECIPES_PER_PAGE = meals_count
 
-    generate_btn = st.button("Generate Meal Plan")
+    if "last_meals_count" not in st.session_state:
+        st.session_state.last_meals_count = meals_count
+
+    if meals_count != st.session_state.last_meals_count:
+        st.session_state.page = 1
+        st.session_state.last_meals_count = meals_count
+    # ----------------------------
+# Reset page when inputs change
+# ----------------------------
+    query_key = f"{age}-{diet_type}-{daily_calories}-{ingredients}-{meals_count}"
+
+    if query_key != st.session_state.last_query:
+        st.session_state.page = 1
+        st.session_state.last_query = query_key
+
+
+    generate_btn = st.button("Generate Recipe Plan")
+
 
 with right_col:
     st.title("🍽️ The AI Chef")
@@ -103,6 +133,13 @@ with right_col:
     st.markdown("### Top Recommendations")
 
     if generate_btn:
+        st.session_state.page=1
+        recs = recommend_recipes(
+        df,
+        tfidf,
+        tfidf_matrix,
+        ingredients
+    )
 
     # --------------------------------
     # CASE 1: INGREDIENT-BASED MODE
@@ -148,11 +185,11 @@ with right_col:
         ]
 
         # Filter recipes using real ingredient semantics
-        recs = df[
-            df["ingredients"].apply(
-                lambda x: recipe_matches_ingredients(x, user_ingredients)
-            )
-        ]
+        # recs = df[
+        #     df["ingredients"].apply(
+        #         lambda x: recipe_matches_ingredients(x, user_ingredients)
+        #     )
+        # ]
 
 
         # ----------------------------
@@ -212,8 +249,10 @@ with right_col:
             elif diet_type == "Gluten-Free":
 
                 gluten_keywords = [
-                    "wheat", "barley", "rye", "bread",
-                    "pasta", "flour", "noodles", "semolina"
+                    "Wheat ", "flour",
+                    "Bread", "roti"," naan"," Pasta"," noodles",
+                    "Biscuits", "cakes","Soy sauce" ,"Pizza base",
+                    "Malt drinks"
                 ]
 
                 recs = recs[
@@ -227,8 +266,9 @@ with right_col:
             elif diet_type == "Keto":
 
                 high_carb_keywords = [
-                    "rice", "bread", "pasta", "potato",
-                    "sugar", "flour", "corn", "wheat"
+                    "Rice","Bread", "roti", "chapati","Potatoes",
+                    "Pasta", "noodles","Sugar", "sweets" ,"Soft drinks",
+                    "Cakes", "biscuits","banana", "mango"
                 ]
 
                 recs = recs[
@@ -248,79 +288,235 @@ with right_col:
             f"Calorie limit applied: {final_calorie_limit} kcal "
             f"(Age-based: {age_calorie_limit} kcal, Your input: {user_calorie_limit} kcal)"
         )
+        # ----------------------------
+        # Batch Pagination Logic
+        # ----------------------------
+        # total_recipes = len(recs)
 
-        if recs.empty:
-            st.warning("No recipes match your preferences.")
-        else:
-            for i, (_, row) in enumerate(recs.head(meals_count).iterrows(), 1):
-                st.markdown(f"### {i}. {row['Name']}")
-                if "Images" in row and isinstance(row["Images"], str) and row["Images"].strip():
-                    image_url = row["Images"].split(",")[0].strip()
-                    if image_url.startswith("http"):
-                        st.image(image_url, use_column_width=True)
+        # recipes_per_page = meals_count  # user-selected batch size
+        # total_pages = (total_recipes - 1) // recipes_per_page + 1
 
-                # st.caption("Why this recipe? " + ", ".join(reasons))
-                st.caption(f"Cuisine: {row.get('RecipeCategory','N/A')}")
+        # start_idx = (st.session_state.page - 1) * recipes_per_page
+        # end_idx = start_idx + recipes_per_page
 
-                st.markdown(f"**Calories:** {int(row['Calories'])} kcal")
-                st.markdown(
-                    f"**Macros (P/C/F):** "
-                    f"{int(row['ProteinContent'])}g / "
-                    f"{int(row['CarbohydrateContent'])}g / "
-                    f"{int(row['FatContent'])}g"
+        # page_recs = recs.iloc[start_idx:end_idx]
+
+
+        # if recs.empty:
+        #     st.warning("No recipes match your preferences.")
+        # else:
+        #     col1, col2, col3 = st.columns([1, 2, 1])
+
+        #     with col1:
+        #         if st.button("⬅ Previous",key="prev_page", disabled=st.session_state.page == 1):
+        #             st.session_state.page -= 1
+
+        #     with col3:
+        #         if st.button("Next ➡", key="next_page", disabled=st.session_state.page == total_pages):
+        #             st.session_state.page += 1
+
+        #     with col2:
+        #         st.markdown(
+        #             f"<p style='text-align:center;'>Page {st.session_state.page} of {total_pages}</p>",
+        #             unsafe_allow_html=True
+        #         )
+
+            # for i, (_, row) in enumerate(page_recs.iterrows(),start=start_idx + 1):
+            #     st.markdown(f"### {i}. {row['Name']}")
+            #     if "Images" in row and isinstance(row["Images"], str) and row["Images"].strip():
+            #         image_url = row["Images"].split(",")[0].strip()
+            #         if image_url.startswith("http"):
+            #             st.image(image_url, use_column_width=True)
+
+            #     # st.caption("Why this recipe? " + ", ".join(reasons))
+            #     st.caption(f"Cuisine: {row.get('RecipeCategory','N/A')}")
+
+            #     st.markdown(f"**Calories:** {int(row['Calories'])} kcal")
+            #     st.markdown(
+            #         f"**Macros (P/C/F):** "
+            #         f"{int(row['ProteinContent'])}g / "
+            #         f"{int(row['CarbohydrateContent'])}g / "
+            #         f"{int(row['FatContent'])}g"
+            #     )
+
+            #     with st.expander("Ingredients & Directions"):
+
+            #     # Ingredients label
+            #         st.markdown("**🧂 Ingredients**")
+            #         ingredients_list = [i.strip() for i in row["ingredients"].split(",") if i.strip()]
+            #         for item in ingredients_list:
+            #             st.markdown(f"- {item}")
+
+            #         st.markdown("---")
+
+            #         # Directions label
+            #         st.markdown("**👨‍🍳 Directions**")
+            #         directions = row["instructions"]
+
+            #         # Split directions into steps (best-effort)
+            #         steps = [
+            #             s.strip().lstrip(",;- ")
+            #             for s in directions.split(".")
+            #             if len(s.strip()) > 5
+            #         ]
+
+            #         for idx, step in enumerate(steps, 1):
+            #             st.markdown(f"{idx}. {step}")
+
+                    # download_text = f"Recipe: {row['Name']}\n\n"
+                    
+                    # if "Images" in row and isinstance(row["Images"], str):
+                    #     image_url = row["Images"].split(",")[0].strip()
+                    #     download_text += f"Image: {image_url}\n\n"
+
+
+                    # download_text += "Ingredients:\n"
+                    # for ing in ingredients_list:
+                    #     download_text += f"- {ing}\n"
+
+                    # download_text += "\nDirections:\n"
+                    # for idx, step in enumerate(steps, 1):
+                    #     download_text += f"{idx}. {step}\n"
+
+                    # st.download_button(
+                    #     label="📥 Download Recipe",
+                    #     data=download_text,
+                    #     file_name=f"{row['Name'].replace(' ', '_')}_recipe.txt",
+                    #     mime="text/plain"
+                    # )
+
+        st.session_state.recs = recs
+        st.session_state.page = 1
+
+    if "recs" not in st.session_state:
+        st.stop()
+
+    recs = st.session_state.recs
+
+    recipes_per_page = meals_count
+    total_recipes = len(st.session_state.recs)
+
+    total_pages = max(1,(total_recipes + RECIPES_PER_PAGE - 1) // RECIPES_PER_PAGE)
+
+    start_idx = (st.session_state.page - 1) * RECIPES_PER_PAGE
+    end_idx = start_idx + RECIPES_PER_PAGE
+
+    page_recs = st.session_state.recs.iloc[start_idx:end_idx]
+
+
+
+    if recs.empty:
+        st.warning("No recipes match your preferences.")
+    else:
+        col1, col2, col3 = st.columns([1, 2, 1])
+
+        with col1:
+            if st.button("⬅ Previous",key="prev_page", disabled=st.session_state.page == 1):
+                st.session_state.page -= 1
+
+        with col3:
+            if st.button("Next ➡", key="next_page", disabled=st.session_state.page == total_pages):
+                st.session_state.page += 1
+
+        with col2:
+            st.markdown(
+                f"<p style='text-align:center;'>Page {st.session_state.page} of {total_pages}</p>",
+                unsafe_allow_html=True
                 )
 
-                with st.expander("Ingredients & Directions"):
+    for idx, (_, row) in enumerate(
+    page_recs.iterrows(),
+    start=start_idx + 1
+):
+    # -------------------------------
+    # Recipe Header
+    # -------------------------------
+        st.markdown(f"### {idx}. {row['Name']}")
 
-                # Ingredients label
-                    st.markdown("**🧂 Ingredients**")
-                    ingredients_list = [i.strip() for i in row["ingredients"].split(",") if i.strip()]
-                    for item in ingredients_list:
-                        st.markdown(f"- {item}")
+        st.markdown(f"**Calories:** {int(row['Calories'])} kcal")
+        st.markdown(
+        f"**Macros (P/C/F):** "
+        f"{int(row['ProteinContent'])}g / "
+        f"{int(row['CarbohydrateContent'])}g / "
+        f"{int(row['FatContent'])}g"
+    )
 
-                    st.markdown("---")
+    # -------------------------------
+    # Recipe Image
+    # -------------------------------
+        if pd.notna(row.get("Images")) and str(row["Images"]).strip():
+            st.image(row["Images"], use_container_width=True)
 
-                    # Directions label
-                    st.markdown("**👨‍🍳 Directions**")
-                    directions = row["instructions"]
+    # -------------------------------
+    # Ingredients & Directions
+    # -------------------------------
+        with st.expander("Ingredients & Directions", expanded=False):
 
-                    # Split directions into steps (best-effort)
-                    steps = [
-                        s.strip().lstrip(",;- ")
-                        for s in directions.split(".")
-                        if len(s.strip()) > 5
-                    ]
+            # ---- INGREDIENTS ----
+            st.markdown("### 🧂 Ingredients")
 
-                    for idx, step in enumerate(steps, 1):
-                        st.markdown(f"{idx}. {step}")
+            raw_ingredients = (
+                row.get("ingredients")
+                # if pd.notna(row.get("ingredients")) and str(row.get("ingredients")).strip()
+                # else row.get("RecipeIngredientParts", "")
+            )
 
-                    download_text = f"Recipe: {row['Name']}\n\n"
-                    
-                    if "Images" in row and isinstance(row["Images"], str):
-                        image_url = row["Images"].split(",")[0].strip()
-                        download_text += f"Image: {image_url}\n\n"
-
-
-                    download_text += "Ingredients:\n"
-                    for ing in ingredients_list:
-                        download_text += f"- {ing}\n"
-
-                    download_text += "\nDirections:\n"
-                    for idx, step in enumerate(steps, 1):
-                        download_text += f"{idx}. {step}\n"
-
-                    st.download_button(
-                        label="📥 Download Recipe",
-                        data=download_text,
-                        file_name=f"{row['Name'].replace(' ', '_')}_recipe.txt",
-                        mime="text/plain"
-                    )
-
-
+            ingredients_list = [
+                i.strip()
+                for i in str(raw_ingredients)
+                    .replace("c(", "")
+                    .replace(")", "")
+                    .split(",")
+                if i.strip()
+            ]
 
 
+            if ingredients_list:
+                for ing in ingredients_list:
+                    st.markdown(f"- {ing}")
+            else:
+                st.info("Ingredients not available.")
+
+            st.markdown("---")
+
+            # ---- DIRECTIONS ----
+            st.markdown("### 👨‍🍳 Directions")
+
+            raw_directions = (
+                row.get("instructions")
+                # if pd.notna(row.get("instructions")) and str(row.get("instructions")).strip()
+                # else row.get("RecipeInstructions", "")
+            )
+
+            steps = [
+                s.strip().lstrip(",;- ")
+                for s in str(raw_directions).split(".")
+                if len(s.strip()) > 5
+            ]
 
 
+            if steps:
+                for step_no, step in enumerate(steps, 1):
+                    st.markdown(f"{step_no}. {step}")
+            else:
+                st.info("Directions not available.")
 
+        # -------------------------------
+        # DOWNLOAD BUTTON (PER RECIPE)
+        # -------------------------------
+        download_text = (
+            f"Recipe: {row['Name']}\n\n"
+            f"Calories: {row['Calories']} kcal\n\n"
+            f"Ingredients:\n"
+            + "\n".join(ingredients_list)
+            + "\n\nDirections:\n"
+            + "\n".join(steps)
+        )
 
-                            
+        st.download_button(
+            label="⬇ Download Recipe",
+            data=download_text,
+            file_name=f"{row['Name'].replace(' ', '_')}.txt",
+            mime="text/plain",
+            key=f"download_{idx}"
+        )
