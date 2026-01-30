@@ -69,31 +69,32 @@ ai-recipe-generator/
 
 The dataset contains:
 
-Recipe names
-Ingredients
-Cooking instructions
-Calories
-Macronutrients (Protein, Carbs, Fat)
-Food type
-Recipe images (Images column)
+1. Recipe names
+2. Ingredients
+3. Cooking instructions
+4. Calories
+5. Macronutrients (Protein, Carbs, Fat)
+6. Food type
+7. Recipe images (Images column)
 
 Dataset Challenges Addressed:
 
-Inconsistent ingredient formatting
-Missing diet labels
-No explicit meat/fish categorization
-Unrealistic calorie values
+1. Inconsistent ingredient formatting
+2. Missing diet labels
+3. No explicit meat/fish categorization
+4. Unrealistic calorie values
 
 All issues are handled through robust preprocessing logic.
 
 🧠 Diet Logic Summary
-Diet Type	Logic Used
-Vegetarian	Plant-based only
-Non-Veg	Meat-based ingredients only
-Pescatarian	Fish/seafood, no meat
-Gluten-Free	Excludes gluten ingredients
-Keto	Low carbs + ingredient filtering
-No Preference	Balanced mix of all diets
+
+1. Diet Type	Logic Used
+2. Vegetarian	Plant-based only
+3. Non-Veg	Meat-based ingredients only
+4. Pescatarian	Fish/seafood, no meat
+5. Gluten-Free	Excludes gluten ingredients
+6. Keto	Low carbs + ingredient filtering
+7. No Preference	Balanced mix of all diets
 
 🚀 How to Run the Streamlit App
 
@@ -116,18 +117,18 @@ Dataset loading is cached for performance
 📥 Recipe Download Feature
 
 For each recipe, users can:
-Download ingredients & directions
-Includes recipe name and image URL
-Generated dynamically (no file storage required)
+1. Download ingredients & directions
+2. Includes recipe name and image URL
+3. Generated dynamically (no file storage required)
 
 🎓 Academic & Viva Highlights
 
-Real-world dataset handling
-Explainable recommendation logic
-Diet inference using ingredient heuristics
-Reactive Streamlit UI
-Clean separation of ML logic and UI
-Production-style Proof of Concept (PoC)
+1. Real-world dataset handling
+2. Explainable recommendation logic
+3. Diet inference using ingredient heuristics
+4. Reactive Streamlit UI
+5. Clean separation of ML logic and UI
+6. Production-style Proof of Concept (PoC)
 
 🧠 Technologies Used
 
